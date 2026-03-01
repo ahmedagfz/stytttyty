@@ -1,0 +1,119 @@
+# تحسينات شاملة لمساعد الأستاذ
+
+إضافة 7 ميزات جديدة + تحسينات بصرية شاملة للتطبيق الحالي (HTML/CSS/JS بدون فريمورك).
+
+## Proposed Changes
+
+### Feature 1: زر غياب ❌ بجانب كل طالب
+
+#### [MODIFY] [index.html](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/index.html)
+- إضافة زر "تحديد الكل حاضر/غائب" في `student-list-header`
+
+#### [MODIFY] [script.js](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/script.js)
+- إضافة مصفوفة `absentStudents` في الحالة
+- تعديل [renderStudentList()](file:///c:/Users/hp/Documents/%D8%B4%D8%A7%D8%B1%D9%8A%D8%B9/%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D8%B3%D8%AA%D8%A7%D8%B0/script.js#814-830) لإضافة زر ❌ بجانب كل اسم
+- تعديل [pickRandomStudent()](file:///c:/Users/hp/Documents/%D8%B4%D8%A7%D8%B1%D9%8A%D8%B9/%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D8%B3%D8%AA%D8%A7%D8%B0/script.js#750-801) ليستبعد الغائبين
+- تحديث [updatePickerUI()](file:///c:/Users/hp/Documents/%D8%B4%D8%A7%D8%B1%D9%8A%D8%B9/%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D8%B3%D8%AA%D8%A7%D8%B0/script.js#831-850) لعرض عدد المتبقين بدون الغائبين
+
+#### [MODIFY] [styles.css](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/styles.css)
+- تنسيق `.student-chip.absent` وزر الغياب
+
+---
+
+### Feature 2: Batch OCR (عدة صور دفعة واحدة)
+
+#### [MODIFY] [index.html](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/index.html)
+- تغيير `input[type=file]` ليدعم `multiple`
+- إضافة شريط تقدم للمعالجة المتعددة
+
+#### [MODIFY] [script.js](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/script.js)
+- تعديل [setImage()](file:///c:/Users/hp/Documents/%D8%B4%D8%A7%D8%B1%D9%8A%D8%B9/%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D8%B3%D8%AA%D8%A7%D8%B0/script.js#219-228) لقبول مصفوفة صور
+- معالجة تسلسلية لكل صورة مع عرض التقدم
+- دمج النصوص المستخرجة أو إضافتها للقائمة
+
+---
+
+### Feature 3: إدارة الشعب المتعددة
+
+#### [MODIFY] [index.html](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/index.html)
+- إضافة شريط شعب فوق قائمة الطلاب (tabs)
+- زر إضافة شعبة جديدة + حذف
+- مودال لتسمية الشعبة
+
+#### [MODIFY] [script.js](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/script.js)
+- هيكل بيانات: `sections = [{ id, name, students, usedStudents, absentStudents }]`
+- `activeSection` لتتبع الشعبة الحالية
+- حفظ واسترجاع من `localStorage`
+- وظائف: `addSection()`, `switchSection()`, `deleteSection()`, `renameSection()`
+
+---
+
+### Feature 4: نطق الاسم صوتياً (TTS)
+
+#### [MODIFY] [script.js](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/script.js)
+- دالة `speakName(name)` باستخدام `SpeechSynthesis API`
+- استدعاء بعد انتهاء animation الاختيار العشوائي
+- لغة عربية `ar-SA`
+
+---
+
+### Feature 5: تطبيق PWA
+
+#### [NEW] [manifest.json](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/manifest.json)
+- أيقونات، اسم التطبيق، ألوان، display standalone
+
+#### [NEW] [sw.js](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/sw.js)
+- Service Worker للتخزين المؤقت (Cache-first)
+- تخزين HTML/CSS/JS والخطوط
+
+#### [MODIFY] [index.html](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/index.html)
+- ربط manifest و Service Worker
+- إضافة meta tags للـ PWA
+
+---
+
+### Feature 6: تصحيح أوراق تلقائي (قريباً)
+
+#### [MODIFY] [index.html](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/index.html)
+- إضافة قسم "تصحيح الاختبارات" بشارة "قريباً" مع تصميم جذاب
+- يكون مرئياً لكن معطّل
+
+---
+
+### Feature 7: حفظ الطلاب في localStorage
+
+#### [MODIFY] [script.js](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/script.js)
+- حفظ `sections` كاملة عند أي تغيير
+- استرجاع عند فتح التطبيق
+- مدمج مع ميزة الشعب
+
+---
+
+### Feature 8: تحسينات الواجهة
+
+#### [MODIFY] [styles.css](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/styles.css)
+- تحسين تنسيق الهيدر وإضافة gradient جديد
+- تأثيرات hover أفضل على الأزرار
+- تصميم أنيق للشعب (tabs بتأثير glassmorphism)
+- تحسين responsive للجوال
+- تأثير confetti عند الاختيار العشوائي
+- أيقونات وألوان جديدة
+
+#### [MODIFY] [index.html](file:///c:/Users/hp/Documents/شاريع/مساعد%20استاذ/index.html)
+- تحسين هيكلية الصفحة
+- إضافة footer بسيط
+
+---
+
+## Verification Plan
+
+### Manual Verification
+1. فتح [index.html](file:///c:/Users/hp/Documents/%D8%B4%D8%A7%D8%B1%D9%8A%D8%B9/%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D8%B3%D8%AA%D8%A7%D8%B0/index.html) في المتصفح
+2. اختبار كل ميزة:
+   - رفع صورة → استخراج أسماء → تظهر مع أزرار الغياب
+   - الضغط على ❌ → الطالب لا يُختار عشوائياً
+   - رفع عدة صور → تُعالج تسلسلياً
+   - إنشاء شعب متعددة والتبديل بينها
+   - إغلاق المتصفح وفتحه → البيانات محفوظة
+   - اختيار طالب عشوائي → ينطق الاسم صوتياً
+   - التطبيق قابل للتثبيت كـ PWA

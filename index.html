@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>مساعد الأستاذ | إدارة ذكية للفصل</title>
+    <meta name="description" content="أداة ذكية لاستخراج النصوص من الصور وإدارة الطلاب باستخدام الذكاء الاصطناعي">
+    <meta name="theme-color" content="#0a0e1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="مساعد الأستاذ">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-content">
+            <div class="splash-icon">📚</div>
+            <h1 class="splash-title">مساعد الأستاذ</h1>
+            <p class="splash-subtitle">إدارة ذكية للفصل بالذكاء الاصطناعي</p>
+            <div class="splash-loader">
+                <div class="splash-loader-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particle Background -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- App Container -->
+    <div class="app-container" id="appContainer" style="display:none">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-right">
+                    <button class="btn-back" id="backBtn" style="display:none" title="رجوع">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22"
+                            height="22">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                    </button>
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 40 40" fill="none">
+                                <rect x="4" y="4" width="32" height="32" rx="6" stroke="url(#logoGrad)"
+                                    stroke-width="2" />
+                                <path d="M12 14h16M12 20h12M12 26h8" stroke="url(#logoGrad)" stroke-width="2"
+                                    stroke-linecap="round" />
+                                <circle cx="30" cy="28" r="6" stroke="url(#logoGrad)" stroke-width="2" />
+                                <path d="M34 32l3 3" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round" />
+                                <defs>
+                                    <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                                        <stop offset="0%" stop-color="#00d4ff" />
+                                        <stop offset="50%" stop-color="#a855f7" />
+                                        <stop offset="100%" stop-color="#ec4899" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div class="logo-text">
+                            <h1 id="headerTitle">مساعد الأستاذ</h1>
+                            <span class="logo-subtitle" id="headerSubtitle">إدارة ذكية للفصل</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon" id="darkModeToggle" title="تبديل الوضع">
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5" />
+                            <path
+                                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                        </svg>
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="display:none">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- API Key Section (hidden) -->
+        <section class="api-key-section glass-card" style="display:none">
+            <div class="api-key-input-wrapper">
+                <input type="password" id="apiKeyInput" class="input-field" placeholder="أدخل مفتاح API هنا...">
+                <button class="btn-icon btn-toggle-key" id="toggleKeyVisibility" title="إظهار/إخفاء المفتاح">
+                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        width="18" height="18">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        width="18" height="18" style="display:none">
+                        <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- ========== VIEW: HOME ========== -->
+        <div class="view" id="viewHome">
+            <div class="home-welcome">
+                <div class="home-welcome-icon">👋</div>
+                <h2>مرحباً بك، أستاذ!</h2>
+                <p>اختر ما تريد القيام به</p>
+            </div>
+            <div class="home-cards">
+                <button class="home-card" data-view="viewOCR">
+                    <div class="home-card-icon" style="background: linear-gradient(135deg, #00d4ff, #0ea5e9);">📸</div>
+                    <div class="home-card-info">
+                        <h3>استخراج النصوص</h3>
+                        <p>صوّر كشف الطلاب واستخرج الأسماء تلقائياً</p>
+                    </div>
+                    <svg class="home-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        width="20" height="20">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+                <button class="home-card" data-view="viewClasses">
+                    <div class="home-card-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);">📂</div>
+                    <div class="home-card-info">
+                        <h3>المرحلة والصفوف</h3>
+                        <p>إدارة الصفوف وحفظ أسماء الطلاب</p>
+                    </div>
+                    <svg class="home-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        width="20" height="20">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+                <button class="home-card" data-view="viewPicker">
+                    <div class="home-card-icon" style="background: linear-gradient(135deg, #ec4899, #f43f5e);">🎲</div>
+                    <div class="home-card-info">
+                        <h3>اختيار طالب عشوائي</h3>
+                        <p>اختر طالباً عشوائياً بدون تكرار</p>
+                    </div>
+                    <svg class="home-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        width="20" height="20">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="home-stats" id="homeStats" style="display:none">
+                <div class="stat-card">
+                    <span class="stat-number" id="statSections">0</span>
+                    <span class="stat-label">صفوف محفوظة</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statStudents">0</span>
+                    <span class="stat-label">طالب</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== VIEW: OCR ========== -->
+        <div class="view" id="viewOCR" style="display:none">
+            <section class="chat-section glass-card">
+                <div class="chat-header">
+                    <h2>💬 المحادثة</h2>
+                    <button class="btn btn-ghost btn-sm" id="clearChatBtn" title="مسح المحادثة">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
+                            height="16">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        مسح
+                    </button>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-welcome">
+                        <div class="chat-welcome-icon">🤖</div>
+                        <p>مرحباً! أنا مساعد الأستاذ 👋</p>
+                        <p class="chat-welcome-sub">ارفع صورة أو عدة صور وسأستخرج النص منها فوراً</p>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="chat-image-preview" id="chatImagePreview" style="display:none">
+                        <img id="previewImage" alt="معاينة الصورة">
+                        <button class="btn-remove-preview" id="removeImageBtn" title="إزالة الصورة">✕</button>
+                    </div>
+
+                    <div class="multi-image-preview" id="multiImagePreview" style="display:none">
+                        <div class="multi-preview-header">
+                            <span id="multiImageCount">0</span> صور محددة
+                            <button class="btn-remove-preview" id="removeAllImagesBtn" title="إزالة الكل">✕</button>
+                        </div>
+                        <div class="multi-preview-thumbs" id="multiPreviewThumbs"></div>
+                    </div>
+
+                    <div class="camera-container" id="cameraContainer" style="display:none">
+                        <video id="cameraVideo" autoplay playsinline></video>
+                        <button class="btn btn-primary btn-capture" id="captureBtn">📸 التقاط</button>
+                        <button class="btn btn-danger btn-sm" id="closeCameraBtn">✕ إغلاق</button>
+                    </div>
+                    <canvas id="captureCanvas" style="display:none"></canvas>
+
+                    <div class="chat-actions">
+                        <label class="btn-action" for="imageUpload" title="رفع صورة أو عدة صور">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22"
+                                height="22">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                        </label>
+                        <input type="file" id="imageUpload" accept="image/jpeg,image/png,image/webp" hidden multiple>
+
+                        <button class="btn-action" id="cameraBtn" title="التقاط صورة">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22"
+                                height="22">
+                                <path
+                                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                            </svg>
+                        </button>
+
+                        <button class="btn-action" id="pasteBtn" title="لصق من الحافظة">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22"
+                                height="22">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                            </svg>
+                        </button>
+
+                        <div class="chat-drop-hint" id="dropZone">
+                            <span>اسحب صورة أو عدة صور هنا</span>
+                        </div>
+
+                        <button class="btn btn-primary btn-extract" id="extractBtn" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"
+                                height="20">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                استخراج النص
+                        </button>
+
+                        <button class="btn btn-secondary btn-save-ocr" id="saveOcrBtn" style="display:none">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"
+                                height="20">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            حفظ في صف
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========== VIEW: CLASSES (المرحلة) ========== -->
+        <div class="view" id="viewClasses" style="display:none">
+            <section class="classes-section glass-card">
+                <div class="classes-header">
+                    <h2>📂 المرحلة والصفوف</h2>
+                    <button class="btn btn-primary btn-sm" id="addSectionBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
+                            height="16">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        إضافة صف
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div class="classes-empty" id="classesEmpty">
+                    <div class="classes-empty-icon">📂</div>
+                    <h3>لا توجد صفوف بعد</h3>
+                    <p>أضف صفاً جديداً أو استخرج أسماء الطلاب من صورة</p>
+                </div>
+
+                <!-- Section List -->
+                <div class="section-list" id="sectionList"></div>
+            </section>
+
+            <!-- Manual Student Entry -->
+            <section class="manual-entry-section glass-card" id="manualEntrySection" style="display:none">
+                <h3>✏️ إضافة طلاب يدوياً</h3>
+                <p class="manual-hint">اكتب اسم كل طالب في سطر منفصل</p>
+                <textarea class="input-field manual-textarea" id="manualStudentInput" rows="5"
+                    placeholder="أحمد محمد&#10;علي حسن&#10;فاطمة أحمد&#10;..."></textarea>
+                <div class="manual-actions">
+                    <button class="btn btn-primary" id="addManualStudentsBtn">
+                        ➕ إضافة الطلاب
+                    </button>
+                    <button class="btn btn-ghost" id="cancelManualBtn">إلغاء</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========== VIEW: PICKER ========== -->
+        <div class="view" id="viewPicker" style="display:none">
+            <section class="student-picker-section glass-card" id="studentPickerSection">
+                <!-- Section Tabs -->
+                <div class="section-tabs-container">
+                    <div class="section-tabs" id="sectionTabs"></div>
+                </div>
+
+                <!-- No sections message -->
+                <div class="picker-no-sections" id="pickerNoSections">
+                    <div class="classes-empty-icon">🎲</div>
+                    <h3>لا توجد صفوف</h3>
+                    <p>أضف صفاً من قسم "المرحلة والصفوف" أولاً</p>
+                    <button class="btn btn-primary btn-sm" id="goToClassesBtn">📂 اذهب للصفوف</button>
+                </div>
+
+                <div id="pickerContent" style="display:none">
+                    <div class="picker-header">
+                        <h2>🎲 اختيار طالب عشوائي</h2>
+                        <div class="picker-counter">
+                            <span id="remainingCount">0</span> / <span id="totalCount">0</span>
+                            <span class="counter-label">متبقي</span>
+                        </div>
+                    </div>
+
+                    <div class="picker-result" id="pickerResult">
+                        <div class="picker-placeholder" id="pickerPlaceholder">
+                            <span class="placeholder-icon">🎯</span>
+                            <p>اضغط الزر لاختيار طالب</p>
+                        </div>
+                        <div class="picker-name" id="pickerName" style="display:none">
+                            <span class="selected-label">الطالب المختار</span>
+                            <div class="selected-name" id="selectedName"></div>
+                        </div>
+                    </div>
+
+                    <canvas id="confettiCanvas"></canvas>
+
+                    <button class="btn btn-pick" id="pickBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22"
+                            height="22">
+                            <path d="M18 4l-1 1.5-3-2L12 6l-2-2.5L7 5.5 6 4" />
+                            <path d="M2 12h2m16 0h2M12 2v2m0 16v2" />
+                            <circle cx="12" cy="12" r="4" />
+                        </svg>
+                        اختر طالب عشوائياً
+                    </button>
+
+                    <div class="student-list-container">
+                        <div class="student-list-header">
+                            <h3>📋 قائمة الطلاب</h3>
+                            <div class="student-list-actions">
+                                <button class="btn btn-ghost btn-sm" id="toggleAbsentMode" title="وضع تسجيل الغياب">
+                                    ❌ تسجيل الغياب
+                                </button>
+                                <button class="btn btn-ghost btn-sm" id="resetStudentsBtn" title="إعادة تعيين">
+                                    🔄 إعادة تعيين
+                                </button>
+                            </div>
+                        </div>
+                        <div class="student-chips" id="studentChips"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>مساعد الأستاذ — أداة ذكية لإدارة الفصل ✨</p>
+            <p class="footer-version">الإصدار 3.0</p>
+        </footer>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" id="bottomNav" style="display:none">
+        <button class="bottom-nav-item active" data-view="viewHome">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            <span>الرئيسية</span>
+        </button>
+        <button class="bottom-nav-item" data-view="viewOCR">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+            </svg>
+            <span>استخراج</span>
+        </button>
+        <button class="bottom-nav-item" data-view="viewClasses">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>الصفوف</span>
+        </button>
+        <button class="bottom-nav-item" data-view="viewPicker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49" />
+                <circle cx="12" cy="12" r="2" />
+            </svg>
+            <span>عشوائي</span>
+        </button>
+    </nav>
+
+    <!-- Section Modal -->
+    <div class="modal-overlay" id="sectionModal" style="display:none">
+        <div class="modal-content glass-card">
+            <h3 id="modalTitle">إضافة صف جديد</h3>
+            <input type="text" id="sectionNameInput" class="input-field"
+                placeholder="اسم الصف (مثال: الصف الأول - شعبة أ)" maxlength="40">
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="modalConfirmBtn">إضافة</button>
+                <button class="btn btn-ghost" id="modalCancelBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal" style="display:none">
+        <div class="modal-content glass-card">
+            <div class="modal-icon-warning">⚠️</div>
+            <h3 id="confirmModalTitle">تأكيد</h3>
+            <p id="confirmModalText" class="modal-text">هل أنت متأكد من هذا الإجراء؟</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="confirmModalYesBtn">نعم، متأكد</button>
+                <button class="btn btn-ghost" id="confirmModalNoBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal-overlay" id="editStudentModal" style="display:none">
+        <div class="modal-content glass-card">
+            <h3>✏️ تعديل اسم الطالب</h3>
+            <input type="text" id="editStudentInput" class="input-field" placeholder="اسم الطالب" maxlength="50">
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="editStudentSaveBtn">حفظ</button>
+                <button class="btn btn-danger" id="editStudentDeleteBtn">🗑️ حذف</button>
+                <button class="btn btn-ghost" id="editStudentCancelBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- PWA Install Banner -->
+    <div class="pwa-install-banner" id="pwaInstallBanner" style="display:none">
+        <span>📱 ثبّت التطبيق على جهازك</span>
+        <button class="btn btn-primary btn-sm" id="pwaInstallBtn">تثبيت</button>
+        <button class="btn-dismiss" id="pwaDismissBtn">✕</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => { });
+        }
+    </script>
+</body>
+
+</html>
