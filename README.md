@@ -1,0 +1,2 @@
+# stytttyty
+stone paper scissor
